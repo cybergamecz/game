@@ -1,0 +1,161 @@
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500&display=swap');
+
+
+html{
+    height: 100%;
+}
+body#index{
+    background-color: #1d2a35;
+    font-family: 'IBM Plex Mono', monospace;
+    padding-top: 5em;
+    display: flex;
+    justify-content: center;
+    height: 100%;
+    overflow: hidden;
+
+}
+
+body#app{
+    background-color: #1d2a35;
+    font-family: 'IBM Plex Mono', monospace;
+    height: 100%;
+    overflow: hidden;
+
+}
+
+body#manual{
+    background-color: #1d2a35;
+    font-family: 'IBM Plex Mono', monospace;
+    height: 100%;
+    overflow: hidden;
+
+}
+
+a, a:visited, a:active {
+    text-decoration: none;
+    color: orange;
+   }
+
+a:hover{
+   color: orangered; 
+}
+
+
+#command_prompt{
+    display: block;
+    border: none;
+    background-color: #141d25;
+    position: fixed;
+    width: auto;
+    min-width: 80em;
+    height: 2em;
+    bottom: 0px;
+    font-family: 'IBM Plex Mono', monospace;
+    outline: none;
+    color: #cbd5e1;
+    margin-left: 16em;
+    margin-bottom: 0.5em;
+    float: left;
+    
+}
+
+p#history{
+    bottom: 3em;
+    font-family: 'IBM Plex Mono', monospace;
+    margin: 0 auto;
+    bottom: 0px;
+    background-color: #1d2a35;
+    width: 100vw;
+    height: (100vw - 3em);
+    position: fixed;
+    padding-right: 1em;
+    padding-left: 1em;
+    padding-top: 0.5em;
+    padding-bottom:  3em;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    scrollbar-width: none;
+    color: #cbd5e1;
+    overflow-y: auto;
+}
+
+
+
+div#prompt{
+    position: fixed;
+    bottom: 0px;
+    left: 0px;
+    font-family: 'IBM Plex Mono', monospace;
+    width: 100vw;
+    margin: 0 auto;
+    background-color: #141d25;
+    width: 100vw;
+    height: 3em;
+    display: inline;
+}
+form#prompt_form{
+    display: inline;
+    height: 1px;
+}
+p#active_user{
+    position: fixed;
+    bottom: 0px;
+    left: 0px;
+    font-family: 'IBM Plex Mono', monospace;
+    color: #cbd5e1;
+    width: fit-content;
+    margin-left: 1em;
+    background-color: #141d25;
+    height: 2em;
+    margin-bottom: auto;
+    margin-top:  1em;
+}
+
+div#container_001{
+    margin-left: 30vh;
+}
+
+span#server_name{
+    color: #039b6d;
+}
+
+span#username{
+    color: orange;
+}
+
+.typewriter h1 {
+    color: #fff;
+    overflow: hidden; 
+    border-right: .15em solid #039b6d; 
+    white-space: nowrap; 
+    margin: 0 auto; 
+    letter-spacing: .2em; 
+    margin: 0 auto;
+    animation: 
+    typing 1.5s steps(30, end),
+    blink_1 .5s step-end infinite;
+}
+
+@keyframes typing {
+    from { width: 0 }
+    to { width: 100% }
+}
+
+@keyframes blink_1 {
+    from, to { border-color: transparent }
+    50% { border-color: #039b6d }
+}
+
+p#timer{
+    position: fixed;
+    bottom: 0px;
+    right: 0px;
+    font-family: 'IBM Plex Mono', monospace;
+    color: #cbd5e1;
+    width: fit-content;
+    margin-right: 1em;
+    background-color: #141d25;
+    height: 2em;
+    margin-bottom: auto;
+    margin-top:  1em;
+}
