@@ -45,6 +45,10 @@ function processCommand(input, output){
          game(input, output);
     }else
     if(gamestarted === false){
+        commandshistory.push(command);
+        if(commandshistory.length > 10){
+            commandshistory.shift();
+        }
     switch(command){
         case 'start':
             output.innerHTML += 'Nekompletní příkaz: zadej obtížnost ("start hard" nebo "start easy")<br>';
@@ -58,6 +62,11 @@ function processCommand(input, output){
             output.innerHTML += '';
             input.value = '';
             timer(input, output, 600);
+            break;
+        case 'start test':
+            output.innerHTML += '';
+            input.value = '';
+            timer(input, output, 10);
             break;
         case 'credits':
             output.innerHTML += 'Hru vytvořil: <br> Adam Czech a Martin Kraus pro vzdělávací účely v rámci SOČ v roce 2023<br>';
@@ -85,17 +94,29 @@ function timer(input, output, maxtime){
         return;
     }
     let time = maxtime;
-    setInterval(function(){
+    let refresh = setInterval(function(){
         time--;
         let minutes = Math.floor(time / 60);
         let seconds = time % 60;
         gametime = time;
-        document.getElementById('timer').innerHTML = minutes + ':' + (seconds < 10 ? '0' : '') + seconds;
-    }, 1000);
-    if(time <= 0){
-        end(input, output);
-        document.getElementById('timer').innerHTML = '--:--';
+        if(time <= 0){
+            document.getElementById('timer').innerHTML = '--:--';
+            clearInterval(refresh);
+            input.value = '';
+            end(input, output);
+
+        }    }, 1000);
+    setInterval(function(){
+        let minutes = Math.floor(time / 60);
+        let seconds = time % 60;
+        if(seconds < 10){
+            seconds = '0' + seconds;
+        }
+        document.getElementById('timer').innerHTML = minutes + ':' + seconds;
     }
+    , 1000);
+
+
     gamerunning = true;
     gamestarted = true;
     output.innerHTML = '';
@@ -117,9 +138,18 @@ function end(input, output){
     output.innerHTML += 'Čas vypršel.<br>';
     console.log('game ended');
     processCommand(input, output);
-
+    return;
 }
 
+function success(input, output){
+    gamestarted = false;
+    gamerunning = false;
+    output.innerHTML += 'Skvěle! Podařilo se ti dostat do PC!<br>';
+    console.log('game ended');
+    input.value = '';
+    processCommand(input, output);
+
+}
 function game(input, output){
 
     if(gametime <= 0){
@@ -140,11 +170,36 @@ function game(input, output){
         commandshistory.shift();
     }
 
+
     switch(commandArray[0]){
         //commands for all modes
         case 'clear':
             output.innerHTML = '';
         break;
+        case 'root': 
+            changeusermode('root');
+        break;
+        case 'user':
+            changeusermode('user');
+        break;
+        case 'sudo':
+            changeusermode('root');
+        break;
+
+        case 'login':{
+            switch(commandArray[1]){
+                case pin.toString():{
+                    success(input, output);
+                }break;
+                case undefined:{
+                    output.innerHTML += 'login: missing argument<br>';
+                }break;
+                default:{
+                    output.innerHTML += 'login: ' + commandArray[1] + ': pin is not correct!<br>';
+                }break;
+
+            }
+        }break;
         //usermode commands
         default:{
             switch(usermode){
@@ -180,7 +235,7 @@ function game(input, output){
                 }}break;
                 case 'root':{
                     switch(commandArray[0]){
-                        case 'apt-get':{
+                        case 'apt':{
                             switch(commandArray[1]){
                                 case 'install':{
                                     switch(commandArray[2]){
@@ -212,8 +267,24 @@ function game(input, output){
                                                output.innerHTML += 'cracker: bruteforce: missing argument<br>';
                                                break;
                                             }
-                                            if(commandArray[4]=== 4){
-                                                
+                                            if(commandArray[3]=== '4'){
+                                                output.innerHTML += 'cracker: bruteforce: Loading';
+                                                let i = 0;
+                                                var refresh = setInterval(function(){
+                                                    i++;
+                                                    if(i > 6){
+                                                        i = 0;
+                                                        clearInterval(refresh);
+                                                         
+                                                    }
+                                                    output.innerHTML += '.';
+                                                }
+                                                , 500);
+                                                setTimeout(function(){
+                                                    output.innerHTML += '<br>cracker: bruteforce: pin is: ' + pin + '<br>';
+                                                    clearInterval(refresh);
+                                                }, 4000);
+                                                    
                                             }
                                             
                                         }break;
@@ -252,7 +323,7 @@ function changeusermode(username){
     }
     switch(username){
        case 'root':{
-        document.getElementById('history').innerHTML += '[sudo] password for root:<br>';
+        document.getElementById('history').innerHTML += '[root] password for root:<br>';
         document.getElementById('command_prompt').value = '';
         document.getElementById('command_prompt').type = 'password';
         document.getElementById('command_prompt').focus(); 
