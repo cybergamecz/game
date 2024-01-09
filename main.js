@@ -1,12 +1,14 @@
 let usermode = 'visitor';
 let gamerunning = false;
 let gamestarted = false;
-let n_of_scenarios = 1;
+let n_of_scenarios = 2;
 let scenario = 0;
 let gametime = 1;
 let apps = [];
 let pin = 5555;
 let commandshistory = [];
+let isTestMode = false;
+
 
 function start(){
     console.log('DEV: function start() called');
@@ -21,8 +23,9 @@ function start(){
 
 function pregame(input, output){
    
-
-    output.innerHTML = 'Vítej ve hře!<br> Můžeš zadat příkaz "start" pro začátek hry, "help" pro nápovědu<br>';
+    output.innerHTML = '';
+    output.innerHTML += 'CyberGame v0.1 <br>';
+    output.innerHTML += 'Vítej ve hře!<br> Můžeš zadat příkaz "start" pro začátek hry, "help" pro nápovědu<br>';
     console.log('DEV: function pregame() called');
     document.getElementById('command_prompt').focus();
     if(gamestarted === true){
@@ -49,6 +52,9 @@ function processCommand(input, output){
         if(commandshistory.length > 10){
             commandshistory.shift();
         }
+
+    
+        
     switch(command){
         case 'start':
             output.innerHTML += 'Nekompletní příkaz: zadej obtížnost ("start hard" nebo "start easy")<br>';
@@ -56,18 +62,22 @@ function processCommand(input, output){
         case 'start hard':
             output.innerHTML += '';
             input.value = '';
-            timer(input, output, 300);
+            usermode = 'user';
+            timer(input, output, 600);
             break;
         case 'start easy':
             output.innerHTML += '';
             input.value = '';
-            timer(input, output, 600);
+            usermode = 'user';
+            timer(input, output, 900);
             break;
-        case 'start test':
-            output.innerHTML += '';
+        case 'start test':{
+           output.innerHTML += '';
             input.value = '';
-            timer(input, output, 10);
-            break;
+            usermode = 'user';
+            timer(input, output, 600);
+            scenario = 1;
+        }break;
         case 'credits':
             output.innerHTML += 'Hru vytvořil: <br> Adam Czech a Martin Kraus pro vzdělávací účely v rámci SOČ v roce 2023<br>';
             break;  
@@ -93,6 +103,8 @@ function timer(input, output, maxtime){
     if(gamerunning === true){
         return;
     }
+    commandshistory = [];
+    usermode = 'user';
     let time = maxtime;
     let refresh = setInterval(function(){
         time--;
@@ -124,12 +136,17 @@ function timer(input, output, maxtime){
      switch(scenario){
         case 1:{
             usermode = 'user';
-            output.innerHTML += 'Bruteforce hesla:<br>Tvým úkolem bude se dostat do špatně zabezpečného PC, tušíš, že heslo je 4 znaky dlouhé a obsahuje pouze číslice. <br> Zkusíš to?<br> Nápověda: použij aplikaci "cracker" <br>';
+            output.innerHTML += 'Bruteforce hesla:<br>Tvým úkolem bude se dostat do špatně zabezpečného PC, tušíš, že heslo je 4 znaky dlouhé a obsahuje pouze číslice.<br>';
             pin = Math.floor(Math.random() * 9000) + 1000;
-            console.log('DEV: pin is ' + pin);
+            
         }break;
+        case 2:{
+            usermode = 'user';
+
+            output.innerHTML += 'Crackování WiFi Hesla:<br> Tvým úkolem je zjistit heslo od Wifi sítě, která používá zastaralé šifrování.<br> Podařilo se ti uložit handshake packet do složky /var/hanshakes/wlan1.pcap<br> Nápověda: využij známé slabiny WEP šifrování, abys získal hash.<br>';
     }
     game(input, output);
+}
 }
 
 function end(input, output){
@@ -147,7 +164,7 @@ function success(input, output){
     output.innerHTML += 'Skvěle! Podařilo se ti dostat do PC!<br>';
     console.log('game ended');
     input.value = '';
-    processCommand(input, output);
+    pregame(input, output);
 
 }
 function game(input, output){
@@ -170,7 +187,25 @@ function game(input, output){
         commandshistory.shift();
     }
 
+    let commandIndex = commandshistory.length;
 
+    window.addEventListener('keydown', function(event){
+        if(event.key == 'ArrowUp'){
+            if(commandIndex > 0) {
+                commandIndex--;
+            }
+            input.value = commandshistory[commandIndex] || '';
+        }
+    });
+    
+    window.addEventListener('keydown', function(event){
+        if(event.key == 'ArrowDown'){
+            if(commandIndex < commandshistory.length - 1) {
+                commandIndex++;
+            }
+            input.value = commandshistory[commandIndex] || '';
+        }
+    });
     switch(commandArray[0]){
         //commands for all modes
         case 'clear':
@@ -200,6 +235,7 @@ function game(input, output){
 
             }
         }break;
+        
         //usermode commands
         default:{
             switch(usermode){
@@ -243,13 +279,13 @@ function game(input, output){
                                             installApp('cracker');
                                        }break;
                                        default:{
-                                             output.innerHTML += 'apt-get: install: ' + commandArray[2] + ': package not found<br>';
+                                             output.innerHTML += 'apt: install: ' + commandArray[2] + ': package not found<br>';
                                         }break;
                                     }
                                 }break;
 
                                 default:{
-                                    output.innerHTML += 'apt-get: ' + commandArray[1] + ': command not found<br>';
+                                    output.innerHTML += 'apt: ' + commandArray[1] + ': command not found<br>';
                                 }break;
                             }
                         }break;
@@ -309,7 +345,14 @@ function game(input, output){
                         }break;
 
                     }}break; 
-            }}break;
+                    default:{
+                        output.innerHTML += 'command not found: ' + commandArray[0] + '<br>';
+                    }break;
+            }
+            
+        }break;
+        
+       
 
     }
    
@@ -361,4 +404,5 @@ function installApp(app){
         
      }, 2000); 
     }
+
 }
